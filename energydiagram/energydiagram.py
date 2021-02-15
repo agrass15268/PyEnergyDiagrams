@@ -179,18 +179,18 @@ class ED:
         y = self.energies[level_id]
         self.electons_boxes.append((x, y, boxes, electrons, side, spacing_f))
 
-    def add_levelpluselectronbox(self,energy,boxes,electrons,bottom_text="",position=None,side=0.5,spacing_f=5,color="k",top_text="",right_text="",left_text=""):
+    def add_levelpluselectronbox(self,energy,boxes:int,electrons:int,bottom_text="",position=None,side=0.5,spacing_f=5,color="k",top_text="",right_text="",left_text=""):
         '''
         Method of class ED
         Convenience function that adds both a level and immediately draws an electronbox on top of it.
         Parameters (identical with add_electronbox and add_level):
         -----------
          energy : int
-                 The energy of the level in Kcal mol-1
+                 The energy of the level
          bottom_text  : str
                  The text on the bottom of the level (label of the level)
                  (default '')
-         position  : str
+         position  : str or int or float
                  The position of the level in the plot. Keep it empty to add
                  the level on the right of the previous level use 'last' as
                  argument for adding the level to the last position used
@@ -218,7 +218,7 @@ class ED:
         self.add_level(energy,bottom_text,position,color,top_text, right_text, left_text)
         thislevel=len(self.bottom_texts)-1
         self.add_electronbox(thislevel,boxes,electrons,side,spacing_f)
-
+        print (self.positions)
         return thislevel
                  
     def plot(self, show_IDs=False,ylabel="Energy / $kcal$ $mol^{-1}$"):
