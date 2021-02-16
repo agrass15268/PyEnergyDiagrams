@@ -80,6 +80,7 @@ class ED:
         Returns
         -------
         Append to the class data all the informations regarding the level added
+        Returns level_id
         '''
 
         if position is None:
@@ -105,7 +106,8 @@ class ED:
         self.links.append(link)
         self.arrows.append([])
 
-        
+        level_id=len(self.energies)-1
+        return level_id
     def add_arrow(self, start_level_id, end_level_id):
         '''
         Method of ED class
@@ -177,6 +179,7 @@ class ED:
         Returns
         -------
         Append link to self.links
+        
 
         '''
         self.__auto_adjust()
@@ -322,7 +325,7 @@ class ED:
                 gapnew = '{0:.2f}'.format(gap)
                 middle= y1-0.5*gap          #warning: this way works for negative HOMO/LUMO energies
                 ax.annotate("", xy=(x1,y1), xytext=(x2,middle), arrowprops=dict(color='green', width=2.5, headwidth=5))
-                ax.annotate(s= gapnew, xy=(x2, y2), xytext=(x1, middle), color='green', arrowprops=dict(width=2.5, headwidth=5, color='green'),
+                ax.annotate(text= gapnew, xy=(x2, y2), xytext=(x1, middle), color='green', arrowprops=dict(width=2.5, headwidth=5, color='green'),
                         bbox=dict(boxstyle='round', fc='white'),
                         ha='center', va = 'center')
 
