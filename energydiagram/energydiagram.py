@@ -25,6 +25,7 @@ class ED:
         self.dimension = 'auto'
         self.space = 'auto'
         self.offset = 'auto'
+        self.offset_energyboxes = "auto" 
         self.offset_ratio = 0.02
         self.color_bottom_text = 'blue'
         self.aspect = aspect
@@ -40,7 +41,7 @@ class ED:
         self.links = []
         self.arrows = []
         self.electons_boxes = []
-
+        self.level_has_boxes = []
         # simultaneous plotting handler
 
         self.ElectronboxesToPlot=[]
@@ -105,7 +106,8 @@ class ED:
         self.right_texts.append(right_text)
         self.links.append(link)
         self.arrows.append([])
-
+        self.level_has_boxes.append(False)
+        
         level_id=len(self.energies)-1
         return level_id
     def add_arrow(self, start_level_id, end_level_id):
@@ -188,6 +190,8 @@ class ED:
         y = self.energies[level_id]
         self.electons_boxes.append((x, y, boxes, electrons, side, spacing_f))
 
+        self.level_has_boxes[level_id]=boxes*side
+        
     def add_levelpluselectronbox(self,energy,boxes:int,electrons:int,bottom_text="",position=None,side=0.4,spacing_f=5,color="k",top_text="",right_text="",left_text=""):
         '''
         Method of class ED
@@ -274,33 +278,48 @@ class ED:
                    self.top_texts,  # 3
                    self.colors,  # 4    
                    self.right_texts, # 5
-                   self.left_texts,))  # 6
+                   self.left_texts, # 6
+                   self.level_has_boxes))  # 7
 
         for level in data:
             start = level[1]*(self.dimension+self.space)
             ax.hlines(level[0], start, start + self.dimension, color=level[4])
+
+
+            
+            if not level[7]: # checks if level has an electronbox attached
+                active_offset_lr=self.offset
+                active_offset_tb=self.offset
+            else:
+                if level[7]<self.dimension:
+                    
+                    active_offset_lr=0
+                else: # provides functionality for when there are more energyboxes than space in the level.
+                    active_offset_lr=level[7]-self.dimension
+                    print(level[7])
+                active_offset_tb=self.offset_energyboxes*1
             ax.text(start+self.dimension/2.,  # X
-                    level[0]+self.offset,  # Y
+                    level[0]+active_offset_tb,  # Y
                     level[3],  # self.top_texts
                     horizontalalignment='center',
                     verticalalignment='bottom')
 
-            ax.text(start + self.dimension,  # X
+            ax.text(start + self.dimension +active_offset_lr,  # X
                     level[0],  # Y
-                    level[5],  # self.bottom_text
+                    level[5],  # self.right_text
                     horizontalalignment='left',
                     verticalalignment='center',
                     color=self.color_bottom_text)
 
-            ax.text(start,  # X
-                    level[0],  # Y
-                    level[6],  # self.bottom_text
+            ax.text(start - active_offset_lr,  # X
+                    level[0]  ,  # Y
+                    level[6],  # self.left_text
                     horizontalalignment='right',
                     verticalalignment='center',
                     color=self.color_bottom_text)
 
             ax.text(start + self.dimension/2.,  # X
-                    level[0] - self.offset*2,  # Y
+                    level[0] - active_offset_tb,  # Y
                     level[2],  # self.bottom_text
                     horizontalalignment='center',
                     verticalalignment='top',
@@ -381,6 +400,8 @@ class ED:
         if self.offset == 'auto':
             self.offset = Energy_variation*self.offset_ratio
 
+        if self.offset_energyboxes=="auto":
+            self.offset_energyboxes = self.offset * 3.5
 if __name__ == '__main__':
         a = ED()
         a.add_level(0,'Separated Reactants')
