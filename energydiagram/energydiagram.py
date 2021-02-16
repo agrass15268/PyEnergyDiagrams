@@ -40,7 +40,11 @@ class ED:
         self.links = []
         self.arrows = []
         self.electons_boxes = []
-        # matplotlib fiugre handlers
+
+        # simultaneous plotting handler
+
+        self.ElectronboxesToPlot=[]
+        # matplotlib figure handlers
         self.fig = None
         self.ax = None
 
@@ -101,6 +105,7 @@ class ED:
         self.links.append(link)
         self.arrows.append([])
 
+        
     def add_arrow(self, start_level_id, end_level_id):
         '''
         Method of ED class
@@ -176,10 +181,11 @@ class ED:
         '''
         self.__auto_adjust()
         x = self.positions[level_id]*(self.dimension+self.space)+self.dimension*0.5
+        
         y = self.energies[level_id]
         self.electons_boxes.append((x, y, boxes, electrons, side, spacing_f))
 
-    def add_levelpluselectronbox(self,energy,boxes:int,electrons:int,bottom_text="",position=None,side=0.5,spacing_f=5,color="k",top_text="",right_text="",left_text=""):
+    def add_levelpluselectronbox(self,energy,boxes:int,electrons:int,bottom_text="",position=None,side=0.4,spacing_f=5,color="k",top_text="",right_text="",left_text=""):
         '''
         Method of class ED
         Convenience function that adds both a level and immediately draws an electronbox on top of it.
@@ -216,10 +222,12 @@ class ED:
         int representing the level number for easy linking.
         '''
         self.add_level(energy,bottom_text,position,color,top_text, right_text, left_text)
-        thislevel=len(self.bottom_texts)-1
-        self.add_electronbox(thislevel,boxes,electrons,side,spacing_f)
+        level_id=len(self.energies)-1
+
+        
+        self.ElectronboxesToPlot.append([level_id,boxes,electrons,side,spacing_f])
         print (self.positions)
-        return thislevel
+        return level_id
                  
     def plot(self, show_IDs=False,ylabel="Energy / $kcal$ $mol^{-1}$"):
         '''
@@ -252,6 +260,10 @@ class ED:
         ax.spines['bottom'].set_visible(False)
 
         self.__auto_adjust()
+
+        #draw electronboxes now that spacing is set
+        for toDraw in self.ElectronboxesToPlot:
+            self.add_electronbox(toDraw[0],toDraw[1],toDraw[2],toDraw[3],toDraw[4])
 
         data = list(zip(self.energies,  # 0
                    self.positions,  # 1
@@ -353,6 +365,7 @@ class ED:
         self.offset
 
         '''
+        
         # Max range between the energy
         Energy_variation = abs(max(self.energies) - min(self.energies))
         if self.dimension == 'auto' or self.space == 'auto':
@@ -361,7 +374,8 @@ class ED:
             space_for_level = Energy_variation*self.ratio/unique_positions
             self.dimension = space_for_level*0.7
             self.space = space_for_level*0.3
-
+            print("Autoadjust. self.ration=%s , unique_positions=%s, Energy_variation=%s"%(self.ratio,unique_positions,Energy_variation))
+            
         if self.offset == 'auto':
             self.offset = Energy_variation*self.offset_ratio
 
