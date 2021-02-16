@@ -226,7 +226,7 @@ class ED:
 
         
         self.ElectronboxesToPlot.append([level_id,boxes,electrons,side,spacing_f])
-        print (self.positions)
+        
         return level_id
                  
     def plot(self, show_IDs=False,ylabel="Energy / $kcal$ $mol^{-1}$"):
@@ -374,7 +374,6 @@ class ED:
             space_for_level = Energy_variation*self.ratio/unique_positions
             self.dimension = space_for_level*0.7
             self.space = space_for_level*0.3
-            print("Autoadjust. self.ration=%s , unique_positions=%s, Energy_variation=%s"%(self.ratio,unique_positions,Energy_variation))
             
         if self.offset == 'auto':
             self.offset = Energy_variation*self.offset_ratio
